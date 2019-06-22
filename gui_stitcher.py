@@ -43,13 +43,9 @@ def call_stitch():
 
     if input_filename == "":
         input_hint_label.pack()
-    else:
-        print(input_filename)
 
     if output_filename == "":
         output_hint_label.pack()
-    else:
-        print(output_filename)
 
     if (input_filename != "") & (output_filename != ""):
         images = frame_generator(input_filename, frames=frames, width=width)
