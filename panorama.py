@@ -1,18 +1,18 @@
 import numpy as np
-import imutils
 import cv2
-
+#import imutils
 
 class Stitcher:
     def __init__(self):
         # determine if we are using OpenCV v3.X
-        self.isv3 = imutils.is_cv3(or_better=True)
+        #self.isv3 = imutils.is_cv3(or_better=True)
+        pass
 
     def multistitch(self, image_generator, ratio=0.75, reproj_thresh=4.0, manual=True, os="linux"):
         """
         Takes an iterable of image paths. Will try to match the Nth image to the N-1th image, stitches the images
         together based on the found match to build a big panorama from all images.
-        Will continue until iterable has no more images or no match was found during one iteration.
+        Will continue until iterable haqqs no more images or no match was found during one iteration.
         :param image_paths: Iterable of image paths
         :param ratio:
         :param reproj_thresh:
@@ -27,6 +27,7 @@ class Stitcher:
 
         # iteration variable. start at 1 because first iteration checks images n and n-1
         i = 1
+
         for next_image in image_generator:
             (next_kps, next_features) = self.detectAndDescribe(next_image)
 
@@ -56,7 +57,7 @@ class Stitcher:
                         if last_key == 2555904: trans_x = trans_x - 1
                         if last_key == 2621440: trans_y = trans_y - 1
                         if last_key == 2424832: trans_x = trans_x + 1
-                    else: 
+                    else:
                         if last_key == 65361: trans_x = trans_x + 1
                         if last_key == 65362: trans_y = trans_y - 1
                         if last_key == 65363: trans_x = trans_x - 1
@@ -123,7 +124,8 @@ class Stitcher:
         Takes two images as a tuple and a (x,y) translation vector.
         Expands and translates the second image, then pastes the
         first into the second. Respects special cases with negative
-        translation values."""
+        translation values.
+        """
 
         (imageA, imageB) = images
         (x, y) = vector
@@ -164,24 +166,25 @@ class Stitcher:
 
     def detectAndDescribe(self, image):
         # convert the image to grayscale
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-        # check to see if we are using OpenCV 3.X
-        if self.isv3:
-            # detect and extract features from the image
-            descriptor = cv2.ORB_create(edgeThreshold=0, nfeatures=10000, scoreType=cv2.ORB_FAST_SCORE)
-            #descriptor = cv2.AKAZE_create(threshold=0)
-            (kps, features) = descriptor.detectAndCompute(image, None)
+        # check to see if we are using OpenCV 3.X ////////// NO OPENCV2 SUPPORT
+        #if self.isv3:
+
+        # detect and extract features from the image
+        descriptor = cv2.ORB_create(edgeThreshold=0, nfeatures=10000, scoreType=cv2.ORB_FAST_SCORE)
+        #descriptor = cv2.AKAZE_create(threshold=0)
+        (kps, features) = descriptor.detectAndCompute(image, None)
 
         # otherwise, we are using OpenCV 2.4.X
-        else:
-            # detect keypoints in the image
-            detector = cv2.FeatureDetector_create("SIFT")
-            kps = detector.detect(gray)
+        # else:
+        #     # detect keypoints in the image
+        #     detector = cv2.FeatureDetector_create("SIFT")
+        #     kps = detector.detect(gray)
 
-            # extract features from the image
-            extractor = cv2.DescriptorExtractor_create("SIFT")
-            (kps, features) = extractor.compute(gray, kps)
+        #     # extract features from the image
+        #     extractor = cv2.DescriptorExtractor_create("SIFT")
+        #     (kps, features) = extractor.compute(gray, kps)
 
         # convert the keypoints from KeyPoint objects to NumPy
         # arrays
