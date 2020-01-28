@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+
 #import imutils
 
 class Stitcher:
@@ -12,7 +13,7 @@ class Stitcher:
         """
         Takes an iterable of image paths. Will try to match the Nth image to the N-1th image, stitches the images
         together based on the found match to build a big panorama from all images.
-        Will continue until iterable haqqs no more images or no match was found during one iteration.
+        Will continue until iterable has no more images or no match was found during one iteration.
         :param image_paths: Iterable of image paths
         :param ratio:
         :param reproj_thresh:
@@ -31,18 +32,22 @@ class Stitcher:
         for next_image in image_generator:
             (next_kps, next_features) = self.detectAndDescribe(next_image)
 
-            M = self.matchKeypoints(next_kps, last_kps,
+            matM = self.matchKeypoints(next_kps, last_kps,
                                     next_features, last_features, ratio, reproj_thresh)
 
-            if M is None:
-                print("No Matches at i = " + str(i))
-                return None
+            if matM is None:
+                print(f'No Matches at i = {str(i)}, returning current result')
+                return result
 
-            (matches, H, status) = M
+            (_, matH, _) = matM
 
             # this stuff only works for isometric anyway, so we only respect the translation
-            trans_x = int(H[0][2])
-            trans_y = int(H[1][2])
+            trans_x = int(matH[0][2])
+            trans_y = int(matH[1][2])
+
+            if np.linalg.norm((trans_x,trans_y)) > 100000:
+                print(f'Strange translation. Skipping current image')
+                continue
 
             if manual:
                 last_key = None
