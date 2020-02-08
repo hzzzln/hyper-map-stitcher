@@ -11,10 +11,10 @@ def frame_generator(path, frames=10, width=477, image_crop=None, ui_cuts = []):
     max_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
     count = 0
     pbar = tqdm(total=max_frames)
-    success = True
+    success = vidcap.grab()
     while success:
         if count % frames == 0:
-            success, image = vidcap.read()
+            success, image = vidcap.retrieve()
             time.sleep(0.01)
             if image_crop is not None:
                 a, b, c, d = image_crop
@@ -30,8 +30,7 @@ def frame_generator(path, frames=10, width=477, image_crop=None, ui_cuts = []):
             #image = image[0:image.shape[0], 0:image.shape[1]]
             #print(f'{int((count/max_frames)*100)}%')
             yield image
-        else:
-            success = vidcap.grab()
+        success = vidcap.grab()
         count += 1
         pbar.update()
 
