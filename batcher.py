@@ -20,10 +20,10 @@ def one_stitch(queue):
 if __name__ == "__main__":
     dirpath = sys.argv[1]
     videos = os.listdir(dirpath)
-    frames = 30
+    frames = 10
     width = 1050
-    image_crop = (5,1045,5,1915)
-    #image_crop = (126,938,4,1916)
+    #image_crop = (5,1045,5,1915)
+    image_crop = (126,938,4,1916)
     #ui_cuts = [(39,99,39,315)]
     q = Queue(maxsize=len(videos))
     threads = []
